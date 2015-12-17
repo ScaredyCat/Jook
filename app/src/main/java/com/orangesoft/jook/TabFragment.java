@@ -18,7 +18,7 @@ public class TabFragment extends Fragment
 {
     public static TabLayout tabLayout;
     public static ViewPager viewPager;
-    public static int int_items = 2;
+    public static int int_items = 3;
 
     @Nullable
     @Override
@@ -69,6 +69,7 @@ public class TabFragment extends Fragment
             {
                 case 0 : return new PlaylistFragment();
                 case 1 : return new AlbumsFragment();
+                case 2 : return new PodcastFragment();
             }
             return null;
         }
@@ -91,6 +92,8 @@ public class TabFragment extends Fragment
                     return "Playlists";
                 case 1 :
                     return "Albums";
+                case 2 :
+                    return "Podcasts";
             }
             return null;
         }
