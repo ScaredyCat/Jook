@@ -1,13 +1,10 @@
 package com.orangesoft.jook;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -15,14 +12,11 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import com.orangesoft.jook.subsonic.GetPodcastsRequest;
 import com.orangesoft.jook.subsonic.SubsonicFragmentBase;
 import com.orangesoft.jook.subsonic.model.JookChannel;
-import com.orangesoft.jook.subsonic.model.JookPlaylist;
-import com.orangesoft.jook.subsonic.view.ChannelArrayAdapter;
-import com.orangesoft.jook.subsonic.view.PlaylistArrayAdapter;
+import com.orangesoft.jook.subsonic.view.ChannelAdapter;
 import com.orangesoft.subsonic.Channel;
-import com.orangesoft.subsonic.Playlist;
-import com.orangesoft.subsonic.command.GetPlaylists;
 import com.orangesoft.subsonic.command.GetPodcasts;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -60,17 +54,12 @@ public class PodcastFragment extends SubsonicFragmentBase
         {
             getActivity().setProgressBarIndeterminateVisibility(false);
             List<Channel> channelList = result.getChannels();
-            Channel[] channels = channelList.toArray(new Channel[channelList.size()]);
-            JookChannel[] jookChannels = new JookChannel[channels.length];
-            int index = 0;
-            for (Channel channel : channels)
-            {
-                JookChannel jookChannel = new JookChannel(channel);
-                jookChannels[index++] = jookChannel;
-            }
-            ChannelArrayAdapter adapter = new ChannelArrayAdapter(getActivity().getApplicationContext(),
+            List<JookChannel> jookChannels = new ArrayList<>();
+            for (Channel channel : channelList)
+                jookChannels.add(new JookChannel(channel));
+            ChannelAdapter adapter = new ChannelAdapter(getActivity().getApplicationContext(),
                     jookChannels);
-            ListView listView = (ListView) getActivity().findViewById(R.id.podcastList);
+            ExpandableListView listView = (ExpandableListView) getActivity().findViewById(R.id.podcastList);
             listView.setAdapter(adapter);
         }
     }
