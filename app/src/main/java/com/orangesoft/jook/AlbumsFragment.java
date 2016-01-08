@@ -52,6 +52,12 @@ public class AlbumsFragment extends SubsonicFragmentBase
         @Override
         public void onRequestSuccess(GetAlbumList result)
         {
+            if (!result.getStatus())
+            {
+                Toast.makeText(getActivity(),
+                        "Error: " + result.getFailureMessage(), Toast.LENGTH_SHORT).show();
+                return;
+            }
             getActivity().setProgressBarIndeterminateVisibility(false);
             List<Album> albumList = result.getList();
             Album[] albums = albumList.toArray(new Album[albumList.size()]);

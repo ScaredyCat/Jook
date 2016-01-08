@@ -67,6 +67,7 @@ public class SubsonicConnection
         return restConnection;
     }
 
+    @SuppressWarnings("unchecked")
     public void sendRequest(SpiceRequest request, RequestListener listener)
     {
         spiceManager.execute(request, listener);
