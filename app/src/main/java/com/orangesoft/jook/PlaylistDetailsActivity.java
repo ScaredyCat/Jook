@@ -75,8 +75,8 @@ public class PlaylistDetailsActivity extends SubsonicBaseActivity
             }
         });
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
 
     @Override

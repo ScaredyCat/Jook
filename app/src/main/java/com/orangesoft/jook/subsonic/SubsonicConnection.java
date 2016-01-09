@@ -8,6 +8,7 @@ import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.UncachedSpiceService;
 import com.octo.android.robospice.request.SpiceRequest;
 import com.octo.android.robospice.request.listener.RequestListener;
+import com.orangesoft.jook.spice.SimpleSpiceService;
 import com.orangesoft.subsonic.system.RestConnection;
 
 import java.io.UnsupportedEncodingException;
@@ -23,7 +24,7 @@ public class SubsonicConnection
     private static final String SUBSONIC_USER = "SubsonicUser";
     private static final String SUBSONIC_PASSWORD = "SubsonicPassword";
     private RestConnection restConnection;
-    private SpiceManager spiceManager = new SpiceManager(UncachedSpiceService.class);
+    private SpiceManager spiceManager = new SpiceManager(SimpleSpiceService.class);
 
     public SubsonicConnection(Activity activity)
     {

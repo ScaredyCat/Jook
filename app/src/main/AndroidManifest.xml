@@ -25,7 +25,7 @@
         </activity>
 
         <service
-            android:name="com.octo.android.robospice.UncachedSpiceService"
+            android:name="com.orangesoft.jook.spice.SimpleSpiceService"
             android:exported="false"/>
 
         <activity

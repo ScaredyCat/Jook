@@ -18,6 +18,7 @@ import com.orangesoft.jook.subsonic.view.PlaylistRecyclerAdapter;
 import com.orangesoft.subsonic.Playlist;
 import com.orangesoft.subsonic.command.GetPlaylists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,12 +27,20 @@ import java.util.List;
  */
 public class PlaylistFragment extends SubsonicFragmentBase
 {
+    private PlaylistRecyclerAdapter adapter;
+    private List<Playlist> playlists;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list_view, container, false);
+        View view = inflater.inflate(R.layout.fragment_list_view, container, false);
+        playlists = new ArrayList<>();
+        adapter = new PlaylistRecyclerAdapter(getContext());
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+        return view;
     }
 
     public void fetchData()
@@ -68,27 +77,25 @@ public class PlaylistFragment extends SubsonicFragmentBase
                 return;
             }
             getActivity().setProgressBarIndeterminateVisibility(false);
-            final List<Playlist> playlistList = result.getList();
-            Playlist[] playlists = playlistList.toArray(new Playlist[playlistList.size()]);
-            JookPlaylist[] jookPlaylists = new JookPlaylist[playlists.length];
+            playlists.clear();
+            playlists.addAll(result.getList());
+            List<JookPlaylist> jookPlaylists = new ArrayList<>();
             int index = 0;
             for (Playlist playlist : playlists)
             {
                 JookPlaylist jookPlaylist = new JookPlaylist(playlist.getName(), playlist.
                         getSongCount(), playlist);
-                jookPlaylists[index++] = jookPlaylist;
+                jookPlaylists.add(jookPlaylist);
             }
-            final PlaylistRecyclerAdapter adapter = new PlaylistRecyclerAdapter(getContext(),
-                    jookPlaylists, new CustomItemClickListener() {
+            adapter.setCustomItemClickListener( new CustomItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
-                    Playlist playlist = playlistList.get(position);
+                    Playlist playlist = playlists.get(position);
                     showPlaylistDetails(playlist.getId());
                 }
             });
-            RecyclerView recyclerView = (RecyclerView) getActivity().findViewById(R.id.recyclerview);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerView.setAdapter(adapter);
+            adapter.updatePlaylist(jookPlaylists);
+            adapter.notifyDataSetChanged();
         }
     }
 

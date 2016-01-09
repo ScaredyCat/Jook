@@ -12,21 +12,34 @@ import com.orangesoft.jook.R;
 import com.orangesoft.jook.subsonic.model.JookPlaylist;
 import com.orangesoft.subsonic.Playlist;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Copyright 2015 Orangesoft
  */
 public class PlaylistRecyclerAdapter extends RecyclerView.Adapter<PlaylistRecyclerAdapter.ViewHolder>
 {
-    private final JookPlaylist[] values;
+    private final List<JookPlaylist> values;
 
     Context context;
     CustomItemClickListener listener;
 
-    public PlaylistRecyclerAdapter(Context context, JookPlaylist[] values, CustomItemClickListener listener)
+    public PlaylistRecyclerAdapter(Context context)
     {
-        this.values = values;
+        this.values = new ArrayList<>();
         this.context = context;
+    }
+
+    public void setCustomItemClickListener(CustomItemClickListener listener)
+    {
         this.listener = listener;
+    }
+
+    public void updatePlaylist(List<JookPlaylist> newValues)
+    {
+        values.clear();
+        values.addAll(newValues);
     }
 
     @Override
@@ -48,19 +61,19 @@ public class PlaylistRecyclerAdapter extends RecyclerView.Adapter<PlaylistRecycl
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i)
     {
-        String item = values[i].toString();
+        String item = values.get(i).toString();
         viewHolder.textView.setText(item);
     }
 
     @Override
     public int getItemCount()
     {
-        return values.length;
+        return values.size();
     }
 
     public Playlist getPlaylist(int index)
     {
-        JookPlaylist jookPlaylist = values[index];
+        JookPlaylist jookPlaylist = values.get(index);
         return jookPlaylist.getPlaylist();
     }
 
