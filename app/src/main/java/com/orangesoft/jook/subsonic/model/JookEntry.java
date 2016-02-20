@@ -2,25 +2,41 @@ package com.orangesoft.jook.subsonic.model;
 
 import com.orangesoft.subsonic.Entry;
 
+import java.io.Serializable;
+
 /**
  * Copyright 2016 Orangesoft
  */
-public class JookEntry
+public class JookEntry implements Serializable
 {
-    private Entry entry;
+    private String entryId;
+    private String title;
+    private String artist;
 
-    public JookEntry(Entry entry)
+    public JookEntry(String entryId, String title, String artist)
     {
-        this.entry = entry;
+        this.entryId = entryId;
+        this.artist = artist;
+        this.title = title;
     }
 
     public String toString()
     {
-        return entry.getTitle() + " - " + entry.getArtist();
+        return title + " - " + artist;
     }
 
-    public Entry getEntry()
+    public String getId()
     {
-        return entry;
+        return entryId;
+    }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public String getArtist()
+    {
+        return artist;
     }
 }

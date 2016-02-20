@@ -38,6 +38,7 @@
 
     <include layout="@layout/content_playlist_details"/>
 
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/play"
         android:layout_width="wrap_content"
@@ -45,5 +46,22 @@
         android:layout_gravity="top|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@android:drawable/ic_media_play"/>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/controls_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        app:cardElevation="8dp">
+
+        <fragment android:name="com.orangesoft.jook.ui.PlaybackControlsFragment"
+                  android:id="@+id/fragment_playback_controls"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_alignParentBottom="true"
+                  tools:layout="@layout/fragment_playback_controls" />
+
+    </android.support.v7.widget.CardView>
 
 </android.support.design.widget.CoordinatorLayout>

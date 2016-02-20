@@ -1,64 +1,71 @@
 package com.orangesoft.jook.subsonic;
 
-import android.app.Activity;
-import android.content.SharedPreferences;
+import android.content.Context;
+import android.media.MediaMetadata;
 import android.util.Base64;
+import android.util.Log;
 
-import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.UncachedSpiceService;
-import com.octo.android.robospice.request.SpiceRequest;
-import com.octo.android.robospice.request.listener.RequestListener;
-import com.orangesoft.jook.spice.SimpleSpiceService;
+import com.orangesoft.jook.model.PlaylistListener;
+import com.orangesoft.jook.model.ProviderConnection;
+import com.orangesoft.jook.model.SongListener;
+import com.orangesoft.jook.subsonic.provider.GetPlaylistListener;
+import com.orangesoft.jook.subsonic.provider.GetPlaylistsListener;
+import com.orangesoft.jook.subsonic.provider.GetSongListener;
+import com.orangesoft.jook.subsonic.provider.StreamListener;
 import com.orangesoft.subsonic.system.RestConnection;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Copyright 2015 Orangesoft.
  */
-public class SubsonicConnection
+public class SubsonicConnection extends ProviderConnection
 {
-    private Activity activity;
-    private static final String JOOK_PREFS = "JookPrefs";
-    private static final String SUBSONIC_HOST = "SubsonicHost";
-    private static final String SUBSONIC_USER = "SubsonicUser";
-    private static final String SUBSONIC_PASSWORD = "SubsonicPassword";
+    private static final String TAG = SubsonicConnection.class.getSimpleName();
+    public static final String PROVIDER_NAME = "SUBSONIC";
+
     private RestConnection restConnection;
-    private SpiceManager spiceManager = new SpiceManager(SimpleSpiceService.class);
 
-    public SubsonicConnection(Activity activity)
+    public SubsonicConnection(Context context)
     {
-        this.activity = activity;
-        spiceManager.start(activity);
+        super(PROVIDER_NAME, context);
     }
 
-    public void saveConnectionDetails( String host, String user, String password )
+    @Override
+    public void fetchPlaylists(PlaylistListener listener)
     {
-
-        SharedPreferences settings = activity.getSharedPreferences(JOOK_PREFS, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(SUBSONIC_HOST, host);
-        editor.putString(SUBSONIC_USER, user);
-        editor.putString(SUBSONIC_PASSWORD, password);
-        editor.apply();
+        GetPlaylistsRequest getPlaylistsRequest = new GetPlaylistsRequest(getConnection());
+        sendRequest(getPlaylistsRequest, new GetPlaylistsListener(context, listener));
     }
 
-    public String getSubsonicHost()
+    @Override
+    public void fetchPlaylist(PlaylistListener listener, String playlistId)
     {
-        SharedPreferences settings = activity.getSharedPreferences(JOOK_PREFS, 0);
-        return settings.getString(SUBSONIC_HOST, "");
+        Map<String, String> params = new HashMap<>();
+        params.put("id", playlistId);
+        GetPlaylistRequest getPlaylistRequest = new GetPlaylistRequest(getConnection(),
+                params);
+        sendRequest(getPlaylistRequest, new GetPlaylistListener(context, listener));
     }
 
-    public String getSubsonicUser()
+    @Override
+    public void fetchSong(SongListener listener, String songId)
     {
-        SharedPreferences settings = activity.getSharedPreferences(JOOK_PREFS, 0);
-        return settings.getString(SUBSONIC_USER, "");
+        Map<String, String> params = new HashMap<>();
+        params.put("id", songId);
+        GetSongRequest getSongRequest = new GetSongRequest(getConnection(), params);
+        sendRequest(getSongRequest, new GetSongListener(context, listener, this));
     }
 
-    public String getSubsonicPassword()
+    @Override
+    public void fetchStream(Context context, SongListener listener, MediaMetadata metadata)
     {
-        SharedPreferences settings = activity.getSharedPreferences(JOOK_PREFS, 0);
-        return  settings.getString(SUBSONIC_PASSWORD, "");
+        Map<String, String> params = new HashMap<>();
+        params.put("id", metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID));
+        GetStreamRequest getStreamRequest = new GetStreamRequest(getConnection(), params);
+        sendRequest(getStreamRequest, new StreamListener(context, listener, metadata));
     }
 
     public RestConnection getConnection()
@@ -68,21 +75,10 @@ public class SubsonicConnection
         return restConnection;
     }
 
-    @SuppressWarnings("unchecked")
-    public void sendRequest(SpiceRequest request, RequestListener listener)
-    {
-        spiceManager.execute(request, listener);
-    }
-
-    public void close()
-    {
-        spiceManager.shouldStop();
-    }
-
     private void initializeConnection()
     {
-        String encodedAuth = getEncodedAuth(getSubsonicUser(), getSubsonicPassword());
-        restConnection = new RestConnection(getSubsonicHost(), encodedAuth);
+        String encodedAuth = getEncodedAuth(getUser(), getPassword());
+        restConnection = new RestConnection(getHost(), encodedAuth);
     }
 
     private static String getEncodedAuth(String user, String password)
@@ -94,7 +90,7 @@ public class SubsonicConnection
         }
         catch (UnsupportedEncodingException e)
         {
-            // Print out some kind of error thingy
+            Log.e(TAG, "Bad encoding:", e);
         }
         return "";
     }

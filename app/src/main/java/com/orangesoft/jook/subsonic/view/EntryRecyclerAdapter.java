@@ -1,8 +1,8 @@
 package com.orangesoft.jook.subsonic.view;
 
 import android.content.Context;
+import android.media.MediaMetadata;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +10,6 @@ import android.widget.TextView;
 
 import com.orangesoft.jook.CustomItemClickListener;
 import com.orangesoft.jook.R;
-import com.orangesoft.jook.subsonic.model.JookEntry;
-import com.orangesoft.subsonic.Entry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +19,12 @@ import java.util.List;
  */
 public class EntryRecyclerAdapter extends RecyclerView.Adapter<EntryRecyclerAdapter.ViewHolder>
 {
-    final static String TAG = "EntryRecyclerAdapter";
-    private final List<JookEntry> entries;
+    private final List<MediaMetadata> entries;
 
     Context context;
     CustomItemClickListener listener;
 
-    public EntryRecyclerAdapter(Context context, List<JookEntry> newEntries,
+    public EntryRecyclerAdapter(Context context, List<MediaMetadata> newEntries,
                                 CustomItemClickListener listener)
     {
         this.entries = new ArrayList<>();
@@ -35,7 +32,7 @@ public class EntryRecyclerAdapter extends RecyclerView.Adapter<EntryRecyclerAdap
         this.listener = listener;
     }
 
-    public void setEntries(List<JookEntry> newEntries)
+    public void setEntries(List<MediaMetadata> newEntries)
     {
         this.entries.clear();
         this.entries.addAll(newEntries);
@@ -60,9 +57,9 @@ public class EntryRecyclerAdapter extends RecyclerView.Adapter<EntryRecyclerAdap
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i)
     {
-        Entry entry = entries.get(i).getEntry();
-        viewHolder.titleView.setText(entry.getTitle());
-        viewHolder.artistView.setText(entry.getArtist());
+        MediaMetadata entry = entries.get(i);
+        viewHolder.titleView.setText(entry.getDescription().getTitle());
+        viewHolder.artistView.setText(entry.getDescription().getSubtitle());
     }
 
     @Override

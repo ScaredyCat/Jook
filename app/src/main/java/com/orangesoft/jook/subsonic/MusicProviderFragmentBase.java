@@ -1,19 +1,27 @@
 package com.orangesoft.jook.subsonic;
 
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+
+import com.orangesoft.jook.model.MusicProvider;
+import com.orangesoft.jook.model.ProviderConnection;
 
 /**
  * Copyright 2015 Orangesoft
  */
-public abstract class SubsonicFragmentBase extends Fragment
+public abstract class MusicProviderFragmentBase extends Fragment
 {
-    public SubsonicConnection connection;
+    public MusicProvider musicProvider;
+    public ProviderConnection connection;
 
     @Override
     public void onStart()
     {
         super.onStart();
         connection = new SubsonicConnection(this.getActivity());
+        musicProvider = MusicProvider.getInstance();
+        musicProvider.setProviderConnection(connection);
         fetchData();
     }
 

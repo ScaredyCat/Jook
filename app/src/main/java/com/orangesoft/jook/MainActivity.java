@@ -15,6 +15,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration;
+import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
+import com.orangesoft.jook.ui.MusicPlayerFullScreenActivity;
+
 
 public class MainActivity extends AppCompatActivity
 {
@@ -34,6 +38,13 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        String applicationId = getResources().getString(R.string.cast_application_id);
+        CastConfiguration configuration = new CastConfiguration.Builder(applicationId)
+                .setTargetActivity(MusicPlayerFullScreenActivity.class)
+                .enableWifiReconnection()
+                .enableDebug()
+                .build();
+        VideoCastManager.initialize(getApplicationContext(), configuration);
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

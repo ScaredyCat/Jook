@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.orangesoft.jook.CustomItemClickListener;
 import com.orangesoft.jook.R;
-import com.orangesoft.jook.subsonic.model.JookPlaylist;
+import com.orangesoft.jook.model.JookPlaylist;
 import com.orangesoft.subsonic.Playlist;
 
 import java.util.ArrayList;
@@ -69,12 +69,6 @@ public class PlaylistRecyclerAdapter extends RecyclerView.Adapter<PlaylistRecycl
     public int getItemCount()
     {
         return values.size();
-    }
-
-    public Playlist getPlaylist(int index)
-    {
-        JookPlaylist jookPlaylist = values.get(index);
-        return jookPlaylist.getPlaylist();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder

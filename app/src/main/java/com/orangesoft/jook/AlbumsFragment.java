@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.orangesoft.jook.subsonic.GetAlbumsRequest;
-import com.orangesoft.jook.subsonic.SubsonicFragmentBase;
+import com.orangesoft.jook.subsonic.MusicProviderFragmentBase;
 import com.orangesoft.jook.subsonic.model.JookAlbum;
 import com.orangesoft.jook.subsonic.view.AlbumArrayAdapter;
 import com.orangesoft.subsonic.Album;
@@ -23,7 +23,7 @@ import com.orangesoft.subsonic.command.GetAlbumList;
 import java.util.List;
 
 
-public class AlbumsFragment extends SubsonicFragmentBase
+public class AlbumsFragment extends MusicProviderFragmentBase
 {
 
     @Override
@@ -35,8 +35,8 @@ public class AlbumsFragment extends SubsonicFragmentBase
 
     public void fetchData()
     {
-        GetAlbumsRequest getAlbumsRequest = new GetAlbumsRequest(connection.getConnection());
-        connection.sendRequest(getAlbumsRequest, new GetAlbumsRequestListener());
+        //GetAlbumsRequest getAlbumsRequest = new GetAlbumsRequest(connection.);
+        //connection.sendRequest(getAlbumsRequest, new GetAlbumsRequestListener());
     }
 
     private final class GetAlbumsRequestListener implements RequestListener<GetAlbumList>

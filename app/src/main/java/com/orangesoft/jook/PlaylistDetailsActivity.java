@@ -1,60 +1,52 @@
 package com.orangesoft.jook;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaMetadata;
+import android.media.session.MediaController;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
-import com.orangesoft.jook.subsonic.GetPlaylistRequest;
-import com.orangesoft.jook.subsonic.SubsonicBaseActivity;
-import com.orangesoft.jook.subsonic.model.JookEntry;
+import com.orangesoft.jook.model.JookPlaylist;
+import com.orangesoft.jook.model.PlaylistListener;
 import com.orangesoft.jook.subsonic.view.EntryRecyclerAdapter;
-import com.orangesoft.subsonic.Entry;
-import com.orangesoft.subsonic.Playlist;
-import com.orangesoft.subsonic.command.GetPlaylist;
+import com.orangesoft.jook.ui.BaseActivity;
+import com.orangesoft.jook.ui.MusicPlayerFullScreenActivity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class PlaylistDetailsActivity extends SubsonicBaseActivity
+public class PlaylistDetailsActivity extends BaseActivity implements PlaylistListener
 {
     public static final String JOOK_PLAYLIST_ID = "JookPlaylistId";
     public static final String TAG = "PlaylistDetailsActivity";
 
     private String playlistId;
     private EntryRecyclerAdapter adapter;
-    private List<JookEntry> jookEntries;
+    private List<MediaMetadata> jookEntries;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_details);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initializeToolbar();
 
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)findViewById(R.id.collapsing_toolbar);
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)findViewById(R.id.
+                collapsing_toolbar);
         collapsingToolbarLayout.setTitle("Playlist");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.play);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Play functionality coming soon!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                playAll();
             }
         });
         Intent intent = getIntent();
@@ -69,9 +61,8 @@ public class PlaylistDetailsActivity extends SubsonicBaseActivity
                 jookEntries, new CustomItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                JookEntry jookEntry = jookEntries.get(position);
-                Entry entry = jookEntry.getEntry();
-                playEntry(entry.getId());
+                MediaMetadata jookEntry = jookEntries.get(position);
+                playEntry(jookEntry.getDescription().getMediaId());
             }
         });
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
@@ -80,14 +71,36 @@ public class PlaylistDetailsActivity extends SubsonicBaseActivity
     }
 
     @Override
+    public void onPlaylists(List<JookPlaylist> playlists) {
+        // not needed
+    }
+
+    @Override
+    public void onPlaylist(JookPlaylist playlist, List<MediaMetadata> entries)
+    {
+        setProgressBarIndeterminateVisibility(false);
+        jookEntries.clear();
+        jookEntries.addAll(entries);
+        adapter.setEntries(jookEntries);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void pushMedia()
+    {
+        Log.v(TAG, "pushMedia for Playlist");
+        Log.d(TAG, "jookEntries has " + jookEntries.size() + " entries");
+        Intent intent = new Intent(this, MusicService.class);
+        intent.setAction(MusicService.ACTION_CMD);
+        intent.putExtra(MusicService.CMD_NAME, MusicService.CUSTOM_ACTION_SET_PLAY_QUEUE);
+        intent.putExtra(MusicService.PLAY_QUEUE, (Serializable) jookEntries);
+        startService(intent);
+    }
+
+    @Override
     public void fetchData()
     {
-        Log.v(TAG, "In fetchData");
-        Map<String, String> params = new HashMap<>();
-        params.put("id", playlistId);
-        GetPlaylistRequest getPlaylistRequest = new GetPlaylistRequest(connection.getConnection(),
-                params);
-        connection.sendRequest(getPlaylistRequest, new GetPlaylistRequestListener(this));
+        musicProvider.fetchPlaylist(this, playlistId);
     }
 
     private void playEntry(String id)
@@ -95,37 +108,21 @@ public class PlaylistDetailsActivity extends SubsonicBaseActivity
         // Play the playlist item
     }
 
-    private final class GetPlaylistRequestListener implements RequestListener<GetPlaylist>
+    private void playAll()
     {
-        final Activity activity;
+        pushMedia();
+        startPlayback();
+        Intent intent = new Intent(getApplicationContext(), MusicPlayerFullScreenActivity.class);
+        intent.putExtra(MusicPlayerFullScreenActivity.JOOK_ENTRIES, (Serializable)jookEntries);
+        startActivity(intent);
+    }
 
-        GetPlaylistRequestListener(Activity activity)
-        {
-            this.activity = activity;
-        }
-
-        @Override
-        public void onRequestFailure(SpiceException spiceException)
-        {
-            Toast.makeText(getApplication(),
-                    "Error: " + spiceException.toString(), Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onRequestSuccess(GetPlaylist result)
-        {
-            setProgressBarIndeterminateVisibility(false);
-            Playlist playlist = result.getPlaylist();
-            final List<Entry> entries = playlist.getEntries();
-            jookEntries.clear();
-            int index = 0;
-            for (Entry entry : entries)
-            {
-                JookEntry jookEntry = new JookEntry(entry);
-                jookEntries.add(jookEntry);
-            }
-            adapter.setEntries(jookEntries);
-            adapter.notifyDataSetChanged();
-        }
+    private void startPlayback()
+    {
+        MediaController controller = getMediaController();
+        if (controller != null)
+            controller.getTransportControls().play();
+        else
+            Log.e(TAG, "MediaController is null.  Cannot start playback!");
     }
 }

@@ -1,22 +1,19 @@
 package com.orangesoft.jook;
 
+import android.app.Fragment;
 import android.content.Intent;
+import android.media.MediaMetadata;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
-import com.orangesoft.jook.subsonic.GetPlaylistsRequest;
-import com.orangesoft.jook.subsonic.SubsonicFragmentBase;
-import com.orangesoft.jook.subsonic.model.JookPlaylist;
+import com.orangesoft.jook.model.PlaylistListener;
+import com.orangesoft.jook.model.JookPlaylist;
+import com.orangesoft.jook.subsonic.MusicProviderFragmentBase;
 import com.orangesoft.jook.subsonic.view.PlaylistRecyclerAdapter;
-import com.orangesoft.subsonic.Playlist;
-import com.orangesoft.subsonic.command.GetPlaylists;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +22,10 @@ import java.util.List;
 /**
  * Copyright 2015 Orangesoft
  */
-public class PlaylistFragment extends SubsonicFragmentBase
+public class PlaylistFragment extends MusicProviderFragmentBase implements PlaylistListener
 {
     private PlaylistRecyclerAdapter adapter;
-    private List<Playlist> playlists;
+    private List<JookPlaylist> playlists;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,11 +40,33 @@ public class PlaylistFragment extends SubsonicFragmentBase
         return view;
     }
 
+    @Override
+    public void onPlaylists(List<JookPlaylist> jookPlaylists)
+    {
+        getActivity().setProgressBarIndeterminateVisibility(false);
+        playlists.clear();
+        playlists.addAll(jookPlaylists);
+        adapter.setCustomItemClickListener( new CustomItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                JookPlaylist playlist = playlists.get(position);
+                showPlaylistDetails(playlist.getId());
+            }
+        });
+        adapter.updatePlaylist(playlists);
+        adapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void onPlaylist(JookPlaylist playlist, List<MediaMetadata> entries)
+    {
+        // Not needed
+    }
+
     public void fetchData()
     {
-        GetPlaylistsRequest getPlaylistsRequest = new GetPlaylistsRequest(connection.
-                getConnection());
-        connection.sendRequest(getPlaylistsRequest, new GetPlaylistsRequestListener());
+        musicProvider.fetchPlaylists(this);
     }
 
     private void showPlaylistDetails(String id)
@@ -55,48 +74,6 @@ public class PlaylistFragment extends SubsonicFragmentBase
         Intent intent = new Intent(getContext(), PlaylistDetailsActivity.class);
         intent.putExtra(PlaylistDetailsActivity.JOOK_PLAYLIST_ID, id);
         startActivity(intent);
-    }
-
-    private final class GetPlaylistsRequestListener implements RequestListener<GetPlaylists>
-    {
-
-        @Override
-        public void onRequestFailure(SpiceException spiceException)
-        {
-            Toast.makeText(getActivity(),
-                    "Error: " + spiceException.toString(), Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onRequestSuccess(GetPlaylists result)
-        {
-            if (!result.getStatus())
-            {
-                Toast.makeText(getActivity(),
-                        "Error: " + result.getFailureMessage(), Toast.LENGTH_SHORT).show();
-                return;
-            }
-            getActivity().setProgressBarIndeterminateVisibility(false);
-            playlists.clear();
-            playlists.addAll(result.getList());
-            List<JookPlaylist> jookPlaylists = new ArrayList<>();
-            int index = 0;
-            for (Playlist playlist : playlists)
-            {
-                JookPlaylist jookPlaylist = new JookPlaylist(playlist.getName(), playlist.
-                        getSongCount(), playlist);
-                jookPlaylists.add(jookPlaylist);
-            }
-            adapter.setCustomItemClickListener( new CustomItemClickListener() {
-                @Override
-                public void onItemClick(View view, int position) {
-                    Playlist playlist = playlists.get(position);
-                    showPlaylistDetails(playlist.getId());
-                }
-            });
-            adapter.updatePlaylist(jookPlaylists);
-            adapter.notifyDataSetChanged();
-        }
     }
 
 }

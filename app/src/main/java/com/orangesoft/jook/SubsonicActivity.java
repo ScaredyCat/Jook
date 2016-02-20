@@ -96,9 +96,9 @@ public class SubsonicActivity extends SubsonicBaseActivity
 
     private void restorePreferences()
     {
-        user = connection.getSubsonicUser();
-        host = connection.getSubsonicHost();
-        password = connection.getSubsonicPassword();
+        user = connection.getUser();
+        host = connection.getHost();
+        password = connection.getPassword();
     }
 
     private void savePreferences()

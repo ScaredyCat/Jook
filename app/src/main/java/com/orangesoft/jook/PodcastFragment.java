@@ -10,7 +10,7 @@ import android.widget.Toast;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.orangesoft.jook.subsonic.GetPodcastsRequest;
-import com.orangesoft.jook.subsonic.SubsonicFragmentBase;
+import com.orangesoft.jook.subsonic.MusicProviderFragmentBase;
 import com.orangesoft.jook.subsonic.model.JookChannel;
 import com.orangesoft.jook.subsonic.view.ChannelAdapter;
 import com.orangesoft.subsonic.Channel;
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Copyright 2015 Orangesoft
  */
-public class PodcastFragment extends SubsonicFragmentBase
+public class PodcastFragment extends MusicProviderFragmentBase
 {
 
     @Override
@@ -35,8 +35,8 @@ public class PodcastFragment extends SubsonicFragmentBase
 
     public void fetchData()
     {
-        GetPodcastsRequest getPodcastsRequest = new GetPodcastsRequest(connection.getConnection());
-        connection.sendRequest(getPodcastsRequest, new GetPodcastsRequestListener());
+        //GetPodcastsRequest getPodcastsRequest = new GetPodcastsRequest(connection.getConnection());
+        //connection.sendRequest(getPodcastsRequest, new GetPodcastsRequestListener());
     }
 
     private final class GetPodcastsRequestListener implements RequestListener<GetPodcasts>

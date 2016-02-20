@@ -3,6 +3,7 @@
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -25,7 +26,7 @@
         </activity>
 
         <service
-            android:name="com.orangesoft.jook.spice.SimpleSpiceService"
+            android:name=".spice.SimpleSpiceService"
             android:exported="false"/>
 
         <activity
@@ -43,6 +44,38 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
+        </activity>
+        <activity
+            android:name=".ui.MusicPlayerFullScreenActivity"
+            android:label="@string/title_activity_music_player_full_screen"
+            android:theme="@style/AppTheme">
+        </activity>
+
+        <service
+            android:name=".MusicService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
+
+        <activity
+            android:name=".ui.NowPlayingActivity"
+            android:label="@string/title_activity_now_playing"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity
+            android:name=".ui.BaseActivity"
+            android:label="@string/title_activity_base"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity
+            android:name=".ui.ActionBarCastActivity"
+            android:label="@string/title_activity_action_bar_cast"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity
+            android:name=".ui.tv.TvBrowseActivity"
+            android:label="@string/title_activity_tv_browse"
+            android:theme="@style/AppTheme">
         </activity>
     </application>
 

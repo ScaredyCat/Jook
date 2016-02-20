@@ -6,4 +6,23 @@
     <string name="drawer_header_text">Jook Menu</string>
     <string name="title_activity_subsonic">SubsonicActivity</string>
     <string name="title_activity_playlist_details">PlaylistDetailsActivity</string>
+    <string name="title_activity_music_player_full_screen">MusicPlayerFullScreenActivity</string>
+    <string name="title_activity_now_playing">NowPlayingActivity</string>
+    <string name="title_activity_music_player">MusicPlayerActivity</string>
+    <string name="title_activity_base">BaseActivity</string>
+    <string name="title_activity_action_bar_cast">ActionBarCastActivity</string>
+    <string name="media_route_menu_title">Play on…</string>
+    <string name="open_content_drawer">Open the main menu</string>
+    <string name="close_content_drawer">Close the main menu</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="title_activity_tv_browse">TvBrowseActivity</string>
+    <string name="home_title">Home</string>
+    <string name="casting_to_device">Casting to %1$s</string>
+    <string name="currently_playing_song">Song currently playing</string>
+    <string name="currently_playing_artist">Artist of currently playing song</string>
+    <string name="currently_playing_extra_info">Extra info for currently playing song</string>
+    <string name="play_pause">play or pause</string>
+    <!-- Use the default receiver. To customize a styled media receiver, you can use
+         the css and images under <project-root>/docs/cast_styled_receiver -->
+    <string name="cast_application_id">CC1AD845</string>
 </resources>
