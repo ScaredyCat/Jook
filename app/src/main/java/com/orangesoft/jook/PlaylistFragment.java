@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.orangesoft.jook.model.PlaylistListener;
 import com.orangesoft.jook.model.JookPlaylist;
@@ -66,7 +67,13 @@ public class PlaylistFragment extends MusicProviderFragmentBase implements Playl
 
     public void fetchData()
     {
-        musicProvider.fetchPlaylists(this);
+        try {
+            musicProvider.fetchPlaylists(this);
+        } catch (IllegalStateException ex)
+        {
+            Toast.makeText(getActivity(), "Connection not set.  Open Settings", Toast.LENGTH_LONG).
+                    show();
+        }
     }
 
     private void showPlaylistDetails(String id)

@@ -32,7 +32,8 @@ public class SubsonicActivity extends SubsonicBaseActivity
         setContentView(R.layout.activity_subsonic);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         this.setTitle("Subsonic");
         Button validateButton = (Button) findViewById(R.id.validate_button);
         validateButton.setOnClickListener(new View.OnClickListener() {
@@ -61,8 +62,18 @@ public class SubsonicActivity extends SubsonicBaseActivity
     @Override
     public void fetchData()
     {
-        PingRequest request = new PingRequest( connection.getConnection() );
-        connection.sendRequest(request, new PingRequestListener(this));
+        // Not implemented so that we don't try to ping the server before we have a configuration.
+    }
+
+    private void pingServer()
+    {
+
+        try {
+            PingRequest request = new PingRequest(connection.getConnection());
+            connection.sendRequest(request, new PingRequestListener(this));
+        } catch (IllegalStateException e) {
+            // Just it eat.
+        }
     }
 
     private void doValidation()
@@ -78,7 +89,10 @@ public class SubsonicActivity extends SubsonicBaseActivity
         user = userField.getText().toString();
         password = passwordField.getText().toString();
 
-        fetchData();
+        connection = new SubsonicConnection(this);
+        savePreferences();
+
+        pingServer();
         hideKeyboard();
     }
 

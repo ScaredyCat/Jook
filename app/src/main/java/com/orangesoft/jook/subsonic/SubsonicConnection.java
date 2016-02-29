@@ -68,17 +68,26 @@ public class SubsonicConnection extends ProviderConnection
         sendRequest(getStreamRequest, new StreamListener(context, listener, metadata));
     }
 
-    public RestConnection getConnection()
+    public RestConnection getConnection() throws IllegalStateException
     {
         if (null == restConnection)
             initializeConnection();
         return restConnection;
     }
 
-    private void initializeConnection()
+    private void initializeConnection() throws IllegalStateException
     {
+        if (!checkConnectionParams())
+            throw new IllegalStateException("Connection parameters have not been set.");
         String encodedAuth = getEncodedAuth(getUser(), getPassword());
         restConnection = new RestConnection(getHost(), encodedAuth);
+    }
+
+    private boolean checkConnectionParams()
+    {
+        return (getHost() != null && getHost().length() > 0 &&
+                getUser() != null && getUser().length() > 0 &&
+                getPassword() != null && getPassword().length() > 0);
     }
 
     private static String getEncodedAuth(String user, String password)
